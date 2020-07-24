@@ -96,8 +96,49 @@ class SortingRobot:
         """
         Sort the robot's list.
         """
-        # Fill this out
-        pass
+        # Let's pick up the first item, because we're going to be going down the line comparing. If we're swapping out the item,
+        # we will turn the light on and swap the light off when we're done and have dropped off our highest / lowest item.
+        # We need to do this for both sides, recursively.
+
+        # Whenever we can't move right anymore and the light isn't on, we're gonna return None.
+        if self.can_move_right() == False and self.light_is_on() == False:
+            return None
+
+        # Let's grab the item in front of us.
+        self.swap_item()
+        
+        # While we can move right and have the initial item...
+        while self.can_move_right():
+            # Move right.
+            self.move_right()
+
+            # If the item in hand is of less value than the item in front of it...
+            if self.compare_item() == -1:  # If it is...
+                self.swap_item()  # Swap out the items.
+                self.set_light_on()  # We're using the light to indicate a swap has been made.
+        # If the end of the row has been reached, it'll be holding the highest value on the pass to the right. Grab it.
+        self.swap_item()
+        self.set_light_off()  # Let's turn our light back off.
+
+        # While we can still move left, and there's still an item to compare (takes care of NoneType values)...
+        while self.can_move_left() and self.compare_item() is not None:
+
+            # Let's begin moving to the left.
+            self.move_left()
+
+            # Since we're going the other way, we want to check if the item in hand is of greater value than the item in front of it...
+            if self.compare_item() == 1:
+                self.swap_item()  # Swap the items.
+                self.set_light_on()  # Turn our light on, to indicate a swap has been made.
+            
+        # Now we have the smallest value from the pass to the left. Let's drop it off...
+        self.swap_item()
+
+        # And move to the right, so we're not starting back at the beginning of the list.
+        self.move_right()
+        self.set_light_off()  # Turn our light off.
+        self.sort()  # Recursively do this.
+
 
 
 if __name__ == "__main__":
